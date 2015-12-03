@@ -1,6 +1,9 @@
 <?php
 use Cake\Routing\Router;
 
-Router::plugin('PluginSystem', function ($routes) {
-    $routes->fallbacks('DashedRoute');
-});
+Router::plugin('PluginSystem', 
+	['path' => '/PluginSystem'],
+    function ($routes) {
+    	$routes->fallbacks('DashedRoute');
+	}
+);

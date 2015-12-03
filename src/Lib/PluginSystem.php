@@ -32,8 +32,6 @@ class PluginSystem
      * 
      * @param mixed $params
      * @return null
-     * 
-     *
      */
     protected function __construct() {
     	self::$_plugins_dir = Plugin::path('PluginSystem').DS.'src'.DS.'Plugins'.DS;
@@ -46,14 +44,17 @@ class PluginSystem
      */
     public static function instance()
     {
-        if (!self::$instance)
+    	
+       	if (!self::$instance)
         {
             self::$instance = new PluginSystem();
         }
         return self::$instance;
     }
     
-    
+    public static function getSystemName($name) {
+    	return str_replace(" ", "-", strtolower(trim($name)));
+    }
     /**
      * Look through the plugin directory and load the plugins into memory
      */
@@ -66,10 +67,10 @@ class PluginSystem
         
         // loop through the folders in the directory and check for plugins
         foreach($plugins[0] as $plugin) {
-        	$plugin = strtolower(trim($plugin));
-    		if(file_exists(self::$_plugins_dir.$plugin.DS.$plugin.".php")) {
-    			self::$plugins_list[$plugin]['name'] = $plugin;
-    			$this->getPluginHeaders($plugin);
+        	$system_name = self::getSystemName($plugin);
+    		if(file_exists(self::$_plugins_dir.$system_name.DS.$system_name.".php")) {
+    			self::$plugins_list[$system_name]['system_name'] = $system_name;
+    			$this->getPluginHeaders($system_name);
     		}
     	}
     }
@@ -81,15 +82,18 @@ class PluginSystem
     {
     	$plugins = TableRegistry::get('PluginSystemPlugins');
     	$query = $plugins->find();
-    	
     	foreach ($query as $row) {
-    		self::$plugins_active[$row['name']]['name'] = $row['name'];
-    		self::$plugins_active[$row['name']]['info']['id'] = $row['id'];
-    		self::$plugins_active[$row['name']]['info']['name'] = $row['name'];
-    		self::$plugins_active[$row['name']]['info']['uri'] = $row['uri'];
-    		self::$plugins_active[$row['name']]['info']['author'] = $row['author'];
-    		self::$plugins_active[$row['name']]['info']['version'] = $row['version'];
-    		self::$plugins_active[$row['name']]['info']['description'] = $row['description'];
+    		$system_name = self::getSystemName($row['system_name']);
+    		self::$plugins_active[$system_name]['system_name'] = $system_name;
+    		self::$plugins_active[$system_name]['info']['id'] = $row['id'];
+    		self::$plugins_active[$system_name]['info']['name'] = $row['name'];
+    		self::$plugins_active[$system_name]['info']['uri'] = $row['uri'];
+    		self::$plugins_active[$system_name]['info']['author'] = $row['author'];
+    		self::$plugins_active[$system_name]['info']['version'] = $row['version'];
+    		self::$plugins_active[$system_name]['info']['description'] = $row['description'];
+    		// set this to active in the plugin list
+    		self::$plugins_list[$system_name]['info']['active'] = true;
+    		self::$plugins_list[$system_name]['info']['id'] = $row['id'];
     	}
     	$this->loadActive();
     }
@@ -101,7 +105,8 @@ class PluginSystem
 	 */
     protected function getPluginHeaders($plugin)
     {
-    	$file = new File(self::$_plugins_dir.$plugin.DS.$plugin.".php");
+    	$system_name = self::getSystemName($plugin);
+    	$file = new File(self::$_plugins_dir.$system_name.DS.$system_name.".php");
         $header = $file->read(); // Load the plugin we want
                    
         preg_match ('|Plugin Name:(.*)$|mi', $header, $name);
@@ -112,30 +117,51 @@ class PluginSystem
         
         if (isset($name[1])) { $pluginInfo['name'] = trim($name[1]); }
         if (isset($uri[1])) { $pluginInfo['uri'] = trim($uri[1]); }
-        if (isset($author_name[1])) { $pluginInfo['author'] = trim($author_name[1]); }
+        if (isset($author[1])) { $pluginInfo['author'] = trim($author[1]); }
         if (isset($version[1])) { $pluginInfo['version'] = trim($version[1]); }
         if (isset($description[1])) { $pluginInfo['description'] = trim($description[1]); }
             
         foreach ($pluginInfo AS $key => $value)
         {
         	// If the key doesn't exist or the value is not the same, update the array
-            if (!isset(self::$plugins_list[$plugin]['info'][$key]) || self::$plugins_list[$plugin]['info'][$key] != $value)
+            if (!isset(self::$plugins_list[$system_name]['info'][$key]) || self::$plugins_list[$system_name]['info'][$key] != $value)
             {
-                self::$plugins_list[$plugin]['info'][$key] = trim($value);
+                self::$plugins_list[$system_name]['info'][$key] = trim($value);
+            }
+            if(!isset(self::$plugins_list[$system_name]['info']['active'])) {
+            	self::$plugins_list[$system_name]['info']['active'] = false;
             }
         }
     }
     
     protected function loadActive() {
+    	if(count(self::$plugins_active) < 1) {
+    		return;
+    	}
     	foreach(self::$plugins_active as $plugin) {
-    		if(file_exists(self::$_plugins_dir.$plugin['name'].DS.$plugin['name'].".php")) {
-    			require_once self::$_plugins_dir.$plugin['name'].DS.$plugin['name'].".php";
+    		if(file_exists(self::$_plugins_dir.$plugin['system_name'].DS.$plugin['system_name'].".php")) {
+    			require_once self::$_plugins_dir.$plugin['system_name'].DS.$plugin['system_name'].".php";
     		}
     	}
     }
     
+    public function activate($plugin, $id) {
+    	$system_name = self::getSystemName($plugin);
+    	if (isset(self::$plugins_list[$system_name]) && isset(self::$plugins_active[$system_name]))
+        {
+        	self::$plugins_active[$system_name] = self::$plugins_list[$system_name];
+        	self::$plugins_active[$system_name]['info']['id'] = $id;
+        	self::$plugins_list[$system_name]['info']['active'] = true;
+        	$this->loadActive();
+        }
+    }
+    
+    public function pluginList() {
+    	return self::$plugins_list;
+    }
+    
     /**
-    * Activate Plugin
+    * Get Plugin
     *
     * Activates a plugin only if it exists in the
     * plugins_pool. After activating, reload page
@@ -143,45 +169,29 @@ class PluginSystem
     * 
     * @param mixed $name
     */
-    public function activate_plugin($name)
+    public function getPlugin($plugin)
     {
-        $name = strtolower(trim($name)); // Make sure the name is lowercase and no spaces
-        
-        // Okay the plugin exists, push it to the activated array
-        if (isset(self::$plugins_pool[$name]) AND !isset(self::$plugins_active[$name]))
-        {            
-            $db = $this->_ci->db->select('plugin_system_name')->where('plugin_system_name', $name)->get('plugins', 1);
-            
-            if ($db->num_rows() == 0)
-            {
-                $this->_ci->db->insert('plugins', array('plugin_system_name' => $name));   
-            }
-            
-            // Run the activate hook
-            self::do_action('activate_' . $name);
+        $system_name = self::getSystemName($plugin); // Make sure the name is lowercase and no spaces
+
+        // Okay the plugin exists
+        if (isset(self::$plugins_list[$system_name]))
+        {
+            return self::$plugins_list[$system_name];
         }
+        return false;
     }
     
-    /**
-    * Deactivate Plugin
-    *
-    * Deactivates a plugin
-    * 
-    * @param string $name
-    */
-    public function deactivate_plugin($name)
+    public function deactivate($plugin)
     {
-        $name = strtolower(trim($name)); // Make sure the name is lowercase and no spaces
+        $system_name = self::getSystemName($plugin);
         
         // Okay the plugin exists
-        if (isset(self::$plugins_active[$name]))
+        if (isset(self::$plugins_active[$system_name]))
         {
-            $this->_ci->db->where('plugin_system_name', $name)->delete('plugins');
-            self::$messages[] = "Plugin ".self::$plugins_pool[$name]['plugin_info']['plugin_name']." has been deactivated!";
-            
-            // Deactivate hook
-            self::do_action('deactivate_' . $name);
-        }        
+            unset(self::$plugins_active[$system_name]);
+        	return true;
+        }
+        return false;
     }
     
     public static function registerHook($hook, $plugin, $function)
