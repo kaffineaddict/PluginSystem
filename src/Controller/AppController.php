@@ -1,4 +1,16 @@
 <?php
+ /**
+  * PluginSystem AppController - Parent Controller
+  *
+  * Eventually this can be used to load components to help or aid with other configuration when the PluginSystem is expanded.
+  * At this time there is no need to globally register or load the helper library.
+  *
+  * @author 	Blake Sutton <sutton.blake@gmail.com>
+  * @version 	1.0
+  * 
+  * @uses 		Cake\Controller\Controller
+  * @uses 		Cake\Event\Event
+  */
 namespace PluginSystem\Controller;
 
 use Cake\Controller\Controller;
@@ -10,13 +22,14 @@ class AppController extends Controller
     /**
      * Initialization hook method.
      *
-     * Use this method to add common initialization code like loading components.
-     *
-     * e.g. `$this->loadComponent('Security');`
-     *
+     * This function is not needed as we do not at this time have any initialization needed for the plugin controllers.
+     * In the future it is possible that I will add a globalization of the PluginSystem object but that could lead
+     * to many security issues
+     * 
      * @return void
      */
     public function initialize()
     {
+    	// do nothing at this time.
     }
 }
