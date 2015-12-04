@@ -8,11 +8,8 @@
  */
 namespace PluginSystem\Lib;
 
-// get path to plugin
 use Cake\Core\Plugin;
-// get the plugins table
 use Cake\ORM\TableRegistry;
-// helpers for file/folder
 use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
 
@@ -22,18 +19,30 @@ use Cake\Filesystem\Folder;
  */
 class PluginSystem
 {
-    // instance of this class for singleton
+    /**
+     * @var PluginSystem A static instance of this class
+     */
     public static $instance;
-    
-    // a list of hook functions
+
+    /**
+     * @var array A list of all hooks and the functions linked to them
+     */
     public static $actions;
-    
-    // plugins
+
+    /**
+     * @var array A list of all plugins in the plugins directory
+     */
     protected static $plugins_list;
+
+    /**
+     * @var array A list of all plugins that are activated
+     */
     protected static $plugins_active;
-    
-    // plugin storage directory
-    protected static $_plugins_dir;
+
+    /**
+     * @var string The full path to the plugins directory
+     */
+    protected static $plugins_dir;
     
     /**
      * Constructor
@@ -44,7 +53,7 @@ class PluginSystem
      * @return PluginSystem
      */
     protected function __construct() {
-    	self::$_plugins_dir = Plugin::path('PluginSystem').DS.'src'.DS.'Plugins'.DS;
+    	self::$plugins_dir = Plugin::path('PluginSystem').DS.'src'.DS.'Plugins'.DS;
     	$this->getActivePlugins();
     	$this->findPlugins();
     }
@@ -73,7 +82,7 @@ class PluginSystem
      * This function will replace spaces with dashes and replace uppercase characters with lowercase in order to generate
      * the System ID Name that we use to autoload the plugin itself.
      *
-     * @param $name string The unformatted plugin name (not the human readable name from the header)
+     * @param $name string The plugin name before formatting (not the human readable name from the header)
      * @return string The System ID Name
      */
     public static function getSystemName($name) {
@@ -89,14 +98,14 @@ class PluginSystem
     protected function findPlugins()
     {   
     	// create a Folder object to the plugins
-        $directory = new Folder(self::$_plugins_dir);
+        $directory = new Folder(self::$plugins_dir);
         // grab the plugins folder directory contents
         $plugins = $directory->read();
         
         // loop through the folders in the directory and check for plugins
         foreach($plugins[0] as $plugin) {
         	$system_name = self::getSystemName($plugin);
-    		if(file_exists(self::$_plugins_dir.$system_name.DS.$system_name.".php")) {
+    		if(file_exists(self::$plugins_dir.$system_name.DS.$system_name.".php")) {
     			self::$plugins_list[$system_name]['system_name'] = $system_name;
     			$this->getPluginHeaders($system_name);
     		}
@@ -136,11 +145,13 @@ class PluginSystem
      *
      * This function will read the file that is supposed to contain the Plugin Header for the plugin to describe what the
      * plugin is and who made it. This information is displayed on the activation and de-activation page.
-	 */
+     *
+     * @param $plugin string The System ID Name of the plugin
+     */
     protected function getPluginHeaders($plugin)
     {
     	$system_name = self::getSystemName($plugin);
-    	$file = new File(self::$_plugins_dir.$system_name.DS.$system_name.".php");
+    	$file = new File(self::$plugins_dir.$system_name.DS.$system_name.".php");
         $header = $file->read(); // Load the plugin we want
                    
         preg_match ('|Plugin Name:(.*)$|mi', $header, $name);
@@ -180,8 +191,8 @@ class PluginSystem
     		return;
     	}
     	foreach(self::$plugins_active as $plugin) {
-    		if(file_exists(self::$_plugins_dir.$plugin['system_name'].DS.$plugin['system_name'].".php")) {
-    			require_once self::$_plugins_dir.$plugin['system_name'].DS.$plugin['system_name'].".php";
+    		if(file_exists(self::$plugins_dir.$plugin['system_name'].DS.$plugin['system_name'].".php")) {
+    			require_once self::$plugins_dir.$plugin['system_name'].DS.$plugin['system_name'].".php";
     		}
     	}
     }
@@ -281,6 +292,8 @@ class PluginSystem
     }
 
     /**
+     * Takes the name of a hook and runs all functions associated with it. If there are returnables return them.
+     *
      * @param $hook string The name of the hook to run
      * @param string $arguments Any arguments that need to be passed to the hook functions
      * @return array|string|void Void if the hook does not exist. Otherwise the response from the functions will be returned.

@@ -46,6 +46,7 @@ class PluginSystemPluginsController extends Controller
      *
      * Attempts to add a plugin to the database and then activate it in the PluginSystem
      *
+     * @param $name String The System ID Name of the plugin to activate
      * @return void Redirects on successful activation or failure
      */
     public function activate($name)
@@ -81,6 +82,7 @@ class PluginSystemPluginsController extends Controller
      *
      * Attempts to remove a plugin to the database and then deactivate it in the PluginSystem
      *
+     * @param $name String The System ID Name of the plugin to activate
      * @return void Redirects on successful deactivate or failure
      */
     public function deactivate($name)
