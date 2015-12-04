@@ -1,4 +1,11 @@
 <?php
+/**
+ * PluginSystem Plugin Database ORM Entity
+ *
+ * @author  Blake Sutton <sutton.blake@gmail.com>
+ * @version	1.0
+ * @since   1.0
+ */
 namespace PluginSystem\Model\Entity;
 
 use Cake\ORM\Entity;

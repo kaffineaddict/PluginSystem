@@ -5,11 +5,9 @@
   * Eventually this can be used to load components to help or aid with other configuration when the PluginSystem is expanded.
   * At this time there is no need to globally register or load the helper library.
   *
-  * @author Blake Sutton <sutton.blake@gmail.com>
+  * @author  Blake Sutton <sutton.blake@gmail.com>
   * @version 1.0
-  *
-  * @uses 		Cake\Controller\Controller
-  * @uses 		Cake\Event\Event
+  * @since   1.0
   */
 namespace PluginSystem\Controller;
 

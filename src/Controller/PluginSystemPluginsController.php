@@ -1,36 +1,53 @@
 <?php
 /**
- * This is a
+ * PluginSystem Main Controller to list, activate and deactivate plugins.
  *
  * @author  Blake Sutton <sutton.blake@gmail.com>
  * @version	1.0
+ * @since   1.0
  */
 namespace PluginSystem\Controller;
 use PluginSystem\Controller\AppController;
-
 use PluginSystem\Lib;
 
 use Cake\Controller\Controller;
 use Cake\Event\Event;
 
+/**
+ * Class PluginSystemPluginsController
+ * @package PluginSystem\Controller
+ */
 class PluginSystemPluginsController extends Controller
 {
+    /**
+     * Initialization hook method.
+     *
+     * Load the flash component so that we can show errors if needed.
+     */
 	public function initialize()
     {
         parent::initialize();
         $this->loadComponent('Flash');
     }
-    
+
+    /**
+     * Index method
+     *
+     * Loads all of the plugins in order to print them for the user.
+     */
     public function index() {
     	$pluginSystem = \PluginSystem\Lib\PluginSystem::instance();
     	
     	$this->set('pluginSystemPlugins', $pluginSystem->pluginList());
     }
+
 	/**
-    * Add method
-    *
-    * @return void Redirects on successful add, renders view otherwise.
-    */
+     * Activate method
+     *
+     * Attempts to add a plugin to the database and then activate it in the PluginSystem
+     *
+     * @return void Redirects on successful activation or failure
+     */
     public function activate($name)
     {
     	$this->request->allowMethod(['post']);
@@ -58,7 +75,14 @@ class PluginSystemPluginsController extends Controller
         
         return $this->redirect($this->referer());
     }
-    
+
+    /**
+     * Deactivate method
+     *
+     * Attempts to remove a plugin to the database and then deactivate it in the PluginSystem
+     *
+     * @return void Redirects on successful deactivate or failure
+     */
     public function deactivate($name)
     {
         $this->request->allowMethod(['post', 'delete']);

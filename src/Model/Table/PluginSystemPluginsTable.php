@@ -1,4 +1,11 @@
 <?php
+/**
+ * PluginSystem Database Model Definition
+ *
+ * @author  Blake Sutton <sutton.blake@gmail.com>
+ * @version	1.0
+ * @since   1.0
+ */
 namespace PluginSystem\Model\Table;
 
 use Cake\ORM\Query;
