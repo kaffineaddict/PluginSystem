@@ -1,4 +1,10 @@
 <?php
+/**
+ * This is a
+ *
+ * @author  Blake Sutton <sutton.blake@gmail.com>
+ * @version	1.0
+ */
 namespace PluginSystem\Controller;
 use PluginSystem\Controller\AppController;
 

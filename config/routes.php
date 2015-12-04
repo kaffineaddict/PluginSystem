@@ -11,6 +11,9 @@
   */
 use Cake\Routing\Router;
 
+/**
+ *
+ */
 Router::plugin('PluginSystem', 
 	['path' => '/Plugins'],
     function ($routes) {
