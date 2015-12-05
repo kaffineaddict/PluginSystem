@@ -76,3 +76,4 @@ Attempts to remove a plugin to the database and then deactivate it in the Plugin
 #### Arguments
 * $name **mixed** - &lt;p&gt;String The System ID Name of the plugin to activate&lt;/p&gt;
 
+

@@ -50,3 +50,4 @@ Default validation rules.
 #### Arguments
 * $validator **Cake\Validation\Validator** - &lt;p&gt;Validator instance.&lt;/p&gt;
 
+

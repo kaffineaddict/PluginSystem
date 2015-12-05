@@ -290,3 +290,4 @@ Takes the name of a hook and runs all functions associated with it. If there are
 * $hook **mixed** - &lt;p&gt;string The name of the hook to run&lt;/p&gt;
 * $arguments **string** - &lt;p&gt;Any arguments that need to be passed to the hook functions&lt;/p&gt;
 
+
