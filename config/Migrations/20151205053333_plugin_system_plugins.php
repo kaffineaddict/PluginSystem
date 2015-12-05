@@ -12,7 +12,7 @@ class PluginSystemPlugins extends AbstractMigration
      */
     public function up()
     {
-                $table = $this->table('plugin_system_plugins');
+        $table = $this->table('plugin_system_plugins');
         $table
             ->addColumn('system_name', 'string', [
                 'default' => null,
@@ -60,15 +60,6 @@ class PluginSystemPlugins extends AbstractMigration
                 ],
                 ['unique' => true]
             )
-            ->create();
-
-        $table = $this->table('roles');
-        $table
-            ->addColumn('name', 'string', [
-                'default' => null,
-                'limit' => 50,
-                'null' => false,
-            ])
             ->create();
     }
 }
