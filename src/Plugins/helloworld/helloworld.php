@@ -30,5 +30,5 @@ use PluginSystem\Lib;
  * A simple function to print hello world as an example
  */
 function print_things() {
-    	echo "This is a hello world";
+    	echo "This is a hello world plugin";
 }

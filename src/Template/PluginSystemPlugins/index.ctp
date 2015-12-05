@@ -29,4 +29,5 @@
             <?php endforeach; ?>
         </tbody>
     </table>
+   	<?php $pluginInstance::hook('index.view'); ?>
 </div>

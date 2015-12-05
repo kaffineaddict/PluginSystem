@@ -39,6 +39,9 @@ class PluginSystemPluginsController extends Controller
     	$pluginSystem = \PluginSystem\Lib\PluginSystem::instance();
     	
     	$this->set('pluginSystemPlugins', $pluginSystem->pluginList());
+    	
+    	//send an instance to the view
+    	$this->set('pluginInstance', $pluginSystem);
     }
 
 	/**
