@@ -17,7 +17,7 @@ use Cake\Controller\Controller;
  * Class AppController
  * @package PluginSystem\Controller
  */
-class AppController extends Controller
+class AppController extends AppController
 {
 
     /**
