@@ -11,13 +11,14 @@
   */
 namespace PluginSystem\Controller;
 
-use Cake\Controller\Controller;
+use App\Controller\AppController as BaseController;
 
-/**
+    /**
  * Class AppController
  * @package PluginSystem\Controller
  */
-class AppController extends AppController
+
+class AppController extends BaseController
 {
 
     /**

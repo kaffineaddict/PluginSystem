@@ -9,15 +9,13 @@
 namespace PluginSystem\Controller;
 use PluginSystem\Controller\AppController;
 use PluginSystem\Lib;
-
-use Cake\Controller\Controller;
 use Cake\Event\Event;
 
 /**
  * Class PluginSystemPluginsController
  * @package PluginSystem\Controller
  */
-class PluginSystemPluginsController extends Controller
+class PluginSystemPluginsController extends AppController
 {
     /**
      * Initialization hook method.
