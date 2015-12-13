@@ -8,12 +8,12 @@ Run the following
 composer require KaffineAddict/plugin-system:dev-master
 ```
 
-Add the following to bootstrap
+Add the following to config/bootstrap.php
 ```
 Plugin::load('PluginSystem', ['bootstrap' => false, 'routes' => true]);
 ```
 
 Run the following
 ```
-.bin/cake migrations migrate -p PluginSystem
+./bin/cake migrations migrate -p PluginSystem
 ```
